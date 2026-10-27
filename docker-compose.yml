@@ -1,0 +1,38 @@
+
+services:
+  sleek-airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow-dbt
+    #image: my-airflow:latest
+    image: my-airflow:dbt
+    user: "${AIRFLOW_UID:-50000}:0"
+
+    volumes:
+      - ./airflow:/opt/airflow
+
+    ports:
+      - "8080:8080"  # Airflow Ui
+      - "8081:8081"  # dbt documentation UI
+
+    environment:
+      MYSQL_HOST: host.docker.internal
+      MYSQL_PORT: "3306"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_DATABASE: quickcart_db
+
+      AIRFLOW__EMAIL__EMAIL_BACKEND: airflow.utils.email.send_email_smtp
+      AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
+      AIRFLOW__SMTP__SMTP_PORT: "587"
+      AIRFLOW__SMTP__SMTP_STARTTLS: "True"
+      AIRFLOW__SMTP__SMTP_SSL: "False"
+      AIRFLOW__SMTP__SMTP_MAIL_FROM: "${GMAIL_ADDRESS}"
+
+      AIRFLOW__SMTP__SMTP_USER: "${GMAIL_ADDRESS}"
+      AIRFLOW__SMTP__SMTP_PASSWORD: "${GMAIL_APP_PASSWORD}"
+
+      GMAIL_ADDRESS: "${GMAIL_ADDRESS}"
+
+      AIRFLOW_CONN_SMTP_DEFAULT: "smtp://${GMAIL_ADDRESS}:${GMAIL_APP_PASSWORD}@smtp.gmail.com:587?disable_ssl=true"
+    command: airflow standalone

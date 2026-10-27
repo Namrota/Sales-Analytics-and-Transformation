@@ -1,0 +1,15 @@
+# Use a version-pinned official Apache Airflow base image
+FROM apache/airflow:3.3.2-python3.13
+
+# Airflow image runs application packages as airflow user
+USER airflow
+
+# Install compatible dbt versions without upgrading Airflow
+RUN pip install --no-cache-dir \
+    "apache-airflow==3.3.2" \
+    "dbt-core==1.11.16" \
+    "dbt-duckdb==1.11.1" \
+    pandas \
+    sqlalchemy \
+    pymysql \
+    && pip check

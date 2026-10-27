@@ -1,0 +1,9 @@
+britmart_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      #path: /workspace/britmart_analytics/dev.duckdb
+      path: /opt/airflow/dbt/britmart_analytics/dev.duckdb
+      schema: main
+      threads: 1

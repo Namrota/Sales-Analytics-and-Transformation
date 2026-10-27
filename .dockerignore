@@ -1,0 +1,3 @@
+airflow_env/
+.git/
+__pycache__/

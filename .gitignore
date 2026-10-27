@@ -1,0 +1,57 @@
+# Environment variables and credentials
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+*passwords.json*
+
+# Python environments and cache
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+airflow_env/
+dbt_env/
+.pytest_cache/
+
+# Airflow runtime files
+**/logs/
+*.log
+airflow.cfg
+airflow.db
+airflow.db-*
+*.db-shm
+*.db-wal
+
+# dbt generated files
+**/target/
+**/dbt_packages/
+
+# DuckDB database files
+*.duckdb
+*.duckdb.wal
+
+# Local tooling
+.vscode/
+.idea/
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+
+# Local backups
+*.backup
+*.bak
+
+# dbt user-specific configuration
+.user.yml
+**/.user.yml
+
+# Local database journal files
+*.duckdb.wal
+*.duckdb.tmp
