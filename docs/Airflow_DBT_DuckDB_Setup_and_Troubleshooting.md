@@ -1,4 +1,4 @@
-Airflow + dbt Core + DuckDB in Docker and WSL: Setup, Troubleshooting, and GitHub Deployment
+## Airflow + dbt Core + DuckDB in Docker and WSL: Setup, Troubleshooting, and GitHub Deployment
 
 Project: airflow-project
 
@@ -8,7 +8,7 @@ Scope: Two dbt projects (sales_dbt and britmart_analytics), Apache Airflow orche
 
 Reconstruction note: This guide documents the sequence and fixes recorded during the project. Some early terminal error messages were not preserved verbatim; those are described as symptoms, not fabricated quotations. Paths and commands reflect the working setup. Review your current docker-compose.yml, Dockerfile.airflow-dbt, and DAGs before reusing commands in a new environment.
 
-1. What we built
+#### 1. What we built
 
 The objective was to run dbt Core transformations against DuckDB under Apache Airflow, from a reproducible Docker environment, while keeping the code editable in VS Code connected to WSL Ubuntu.
 
@@ -36,8 +36,8 @@ Airflow container (Python 3.13, Airflow 3.3.2, dbt Core, dbt-duckdb)
                                 v
                       Local read-only verifier
 
+#### Repository structure
 
-Repository structure
 airflow-project/
 ├── .dockerignore
 ├── .env                 # PRIVATE: never commit
@@ -68,7 +68,7 @@ airflow-project/
 
 *.duckdb, .venv/, dbt-generated artifacts, logs, and secrets are intentionally excluded from Git.
 
-2. Fix the development environment:
+#### 2. Fix the development environment:
 VS Code, WSL, and Docker
 
 2.1 Use the right VS Code execution environment
@@ -112,7 +112,7 @@ Therefore the same files have two apparent paths:
 
 This distinction later explained why hardcoded Docker paths failed for locally executed Python scripts.
 
-3. Choose compatible Airflow, Python, and dbt versions
+#### 3. Choose compatible Airflow, Python, and dbt versions
 
 3.1 What caused concern
 
@@ -183,7 +183,7 @@ docker compose up -d --build
 
 config --quiet succeeded during final review. The project historically ran on the tested image tag my-airflow:dbt-test; my-airflow:dbt is the intended reproducible Compose image tag.
 
-4. Resolve container filesystem permissions and dbt runtime errors
+#### 4. Resolve container filesystem permissions and dbt runtime errors
 
 These were some of the most instructive problems in the project.
 
@@ -239,7 +239,7 @@ docker compose exec -e DBT_LOG_PATH=/tmp/sales-dbt-logs \
 
 The principle is to run dependencies in the environment where they are installed, rather than assuming all terminals share one Python environment.
 
-5. Set up the Sales dbt project
+#### 5. Set up the Sales dbt project
 
 5.1 dbt_project.yml and profiles.yml
 
@@ -298,7 +298,7 @@ docker compose exec \
 
 dbt build executes the selected model and eligible related tests. A separate dbt test --select example_model also passed 1/1 in our verification.
 
-6. Integrate dbt with Apache Airflow
+#### 6. Integrate dbt with Apache Airflow
 
 6.1 Sales DAG
 
@@ -346,7 +346,7 @@ docker compose exec \
   dbt docs generate --project-dir /opt/airflow/dbt/sales_dbt
 Serving docs requires a process bound to an appropriate interface and port. In the completed sessions, the dbt docs UI was successfully accessed on http://localhost:8081 for BritMart. Do not assume generating docs for Sales automatically makes its docs available at the same port.
 
-7. Verify the transformed DuckDB table with Python
+#### 7. Verify the transformed DuckDB table with Python
 
 7.1 Original Docker-specific script
 The original assignments/airflow_dbt_duckdb/verify_duckdb.py connected to:
@@ -407,13 +407,13 @@ Two coding mistakes were corrected:
 Missing import:
 from pathlib import Path
 Incorrect use of a literal string:
-# WRONG: literally contains the letters PROJECT_ROOT
+#### WRONG: literally contains the letters PROJECT_ROOT
 DB_PATH = 'PROJECT_ROOT/airflow/dbt/sales_dbt/sales.duckdb'
 
-# RIGHT: joins the variable's value with path components
+#### RIGHT: joins the variable's value with path components
 DB_PATH = PROJECT_ROOT / 'airflow' / 'dbt' / 'sales_dbt' / 'sales.duckdb'
 
-8. Fix WSL Python package errors without disturbing Docker
+#### 8. Fix WSL Python package errors without disturbing Docker
 
 After switching to direct local execution, the initial errors were:
 ModuleNotFoundError: No module named 'duckdb'
@@ -458,12 +458,15 @@ Total records: 4
 Git ignore status was also verified:
 
 git check-ignore -v .venv/
-# .gitignore:15:.venv/    .venv/
 
-Isolation:
-pip install in .venv does not alter the Docker image. But both environments can see the same .duckdb file via the bind mount; avoid simultaneous writes, and consider database-format compatibility if DuckDB versions differ.
 
-9. Version control and GitHub publication
+##### Isolation:
+
+pip install in .venv does not alter the Docker image.
+
+But both environments can see the same .duckdb file via the bind mount; avoid simultaneous writes, and consider database-format compatibility if DuckDB versions differ.
+
+#### 9. Version control and GitHub publication
 
 9.1 Make the repository reproducible and safe
 
@@ -544,7 +547,7 @@ git commit -m "Make DuckDB verification script portable"
 git push
 Check the current Git status to verify whether this follow-up commit has already been pushed; the conversation confirmed the earlier repository push but not a later push of the portable verifier.
 
-10. Error → root cause → fix reference
+#### 10. Error → root cause → fix reference
 
 Symptom / error	Root cause	Fix or diagnostic
 Docker commands unavailable in WSL	Docker Desktop stopped or WSL integration inactive	Start Docker Desktop; verify WSL integration and docker ps
@@ -570,18 +573,18 @@ Could not open a connection to your authentication agent	SSH agent not running/c
 11. How to reproduce from a fresh clone
 
 These are the broad steps for someone cloning the repository; the existing README/Compose file should be consulted for environment variables and local prerequisites.
-# 1. Clone via SSH (after registering an SSH authentication key).
+##### 1. Clone via SSH (after registering an SSH authentication key).
 git clone git@github.com:Namrota/dbt_docker_airflow_setup.git
 cd dbt_docker_airflow_setup
 
-# 2. Create local configuration; edit placeholder values as appropriate.
+##### 2. Create local configuration; edit placeholder values as appropriate.
 cp .env.example .env
 
-# 3. Validate and build the Docker application.
+##### 3. Validate and build the Docker application.
 docker compose config --quiet
 docker compose up -d --build
 
-# 4. Run the Sales project inside Docker.
+##### 4. Run the Sales project inside Docker.
 docker compose exec \
   -e DBT_LOG_PATH=/tmp/sales-dbt-logs \
   -e DBT_TARGET_PATH=/tmp/sales-dbt-target \
@@ -590,16 +593,19 @@ docker compose exec \
   --project-dir /opt/airflow/dbt/sales_dbt \
   --select example_model
 
-# 5. Open Airflow UI at http://localhost:8080
-#    Trigger sales_dbt_pipeline and inspect both task logs.
+##### 5. Open Airflow UI at http://localhost:8080
+#####    - Trigger sales_dbt_pipeline and inspect both task logs.
 
-# 6. Optional local read-only DuckDB verification.
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install duckdb pandas
-python assignments/airflow_dbt_duckdb/verify_duckdb.py
-Caveats: The database is generated locally and is not checked into Git. It must be built before verification. The local DuckDB library may differ from the image's version; use read-only verification when the database is not being written. For BritMart, load any needed seeds before executing models that reference them.
-12. Lessons learned
+##### 6. Optional local read-only DuckDB verification.
+
+    python3 -m venv .venv
+    source .venv/bin/activate
+    python -m pip install duckdb pandas
+    python assignments/airflow_dbt_duckdb/verify_duckdb.py
+    Caveats: The database is generated locally and is not checked into Git. It must be built before verification. The local DuckDB library may differ from the image's version; use read-only verification when the database is not being written. For BritMart, load any needed seeds before executing models that reference them.
+
+### 12. Lessons learned:
+
 1. WSL, Windows, Docker, and Python venv are distinct environments. Always check where a command is running and which interpreter/user it uses.
 2. Image-build success is not runtime success. Check effective UID, executables, mount permissions, and task logs.
 3. Bind mounts make files visible on both sides but do not erase path differences. Container paths such as /opt/airflow are not host paths.
@@ -610,7 +616,7 @@ Caveats: The database is generated locally and is not checked into Git. It must 
 8. Git commit identity and SSH authentication are separate. user.name/user.email signs metadata; an SSH key authenticates a GitHub push.
 13. Final validated outcomes
 - [x] VS Code working in WSL Ubuntu; Docker Desktop and Compose accessible.
-- [x] Python 3.13.15 + Apache Airflow 3.3.2 + dbt Core 1.11.16 + dbt-duckdb 1.11.1 verified in a test image.
+- [x] Python 3.13.15 + Apache Airflow 3.3.2 + dbt Core 1.11.16 + dbt-duckdb 1.11.1 verified in  a test image.
 - [x] dbt permission and writable-path issues resolved.
 - [x] Sales dbt model produced four expected sales rows.
 - [x] Custom Sales dbt singular test passed (1/1).
