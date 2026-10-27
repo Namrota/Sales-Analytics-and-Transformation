@@ -1,12 +1,19 @@
 Airflow + dbt Core + DuckDB in Docker and WSL: Setup, Troubleshooting, and GitHub Deployment
+
 Project: airflow-project
+
 Environment: Windows 11 → WSL Ubuntu → VS Code → Docker Desktop
-Completed: 27 October 2026
+
 Scope: Two dbt projects (sales_dbt and britmart_analytics), Apache Airflow orchestration, portable Python verification, and GitHub publication.
+
 Reconstruction note: This guide documents the sequence and fixes recorded during the project. Some early terminal error messages were not preserved verbatim; those are described as symptoms, not fabricated quotations. Paths and commands reflect the working setup. Review your current docker-compose.yml, Dockerfile.airflow-dbt, and DAGs before reusing commands in a new environment.
 
 1. What we built
-The objective was to run dbt Core transformations against DuckDB under Apache Airflow, from a reproducible Docker environment, while keeping the code editable in VS Code connected to WSL Ubuntu. We developed two projects:
+
+The objective was to run dbt Core transformations against DuckDB under Apache Airflow, from a reproducible Docker environment, while keeping the code editable in VS Code connected to WSL Ubuntu.
+
+We developed two projects:
+
 - sales_dbt — A small CSV sales dataset; dbt model computes estimated tax and total with tax; custom data-quality test; Airflow DAG executes dbt; a Python script reads the resulting DuckDB table.
 - britmart_analytics — An orders.csv seed, an stg_orders.sql transformation, dbt configuration, and its Airflow DAG.
 Windows 11 / VS Code
@@ -28,6 +35,8 @@ Airflow container (Python 3.13, Airflow 3.3.2, dbt Core, dbt-duckdb)
                                 |
                                 v
                       Local read-only verifier
+
+
 Repository structure
 airflow-project/
 ├── .dockerignore
@@ -56,10 +65,16 @@ airflow-project/
             ├── profiles.yml
             ├── models/stg_orders.sql
             └── seeds/orders.csv
+
 *.duckdb, .venv/, dbt-generated artifacts, logs, and secrets are intentionally excluded from Git.
-2. Fix the development environment: VS Code, WSL, and Docker
+
+2. Fix the development environment:
+VS Code, WSL, and Docker
+
 2.1 Use the right VS Code execution environment
+
 The first essential correction was ensuring VS Code was attached to WSL Ubuntu, rather than using a Windows terminal for Linux paths and commands.
+
 1. Open VS Code in its WSL mode (Remote/WSL connection).
 2. Open the project directory from Ubuntu: ~/airflow-project.
 3. Check the integrated terminal is an Ubuntu shell and uses a prompt such as namrota_ghosh@...:~/airflow-project$.
@@ -69,13 +84,18 @@ whoami
 python3 --version
 docker --version
 docker compose version
-Why: Windows and Ubuntu have different paths, Python installations, SSH keys, and virtual environments. Commands executed in Windows PowerShell are not automatically equivalent to those executed in WSL.
+
+Why:
+Windows and Ubuntu have different paths, Python installations, SSH keys, and virtual environments. Commands executed in Windows PowerShell are not automatically equivalent to those executed in WSL.
+
 2.2 Start Docker Desktop and enable WSL integration
+
 Initially Docker Desktop was not running. Start it in Windows, ensure WSL integration is enabled for the Ubuntu distribution, then test in WSL:
-docker info
-docker ps
+- docker info
+- docker ps
 An earlier Docker socket permission issue in the broader setup was solved using Docker group access. For a system where group membership is not configured:
 sudo usermod -aG docker "$USER"
+
 # Exit/restart the WSL shell for the new group membership to apply.
 groups
 Do not run arbitrary chmod 777 /var/run/docker.sock: weakening the socket permissions is not the recommended remedy.
@@ -84,27 +104,33 @@ The Compose application used this important mapping:
 volumes:
   - ./airflow:/opt/airflow
 Therefore the same files have two apparent paths:
-File	WSL path	Path inside container
-DuckDB database	~/airflow-project/airflow/dbt/sales_dbt/sales.duckdb	/opt/airflow/dbt/sales_dbt/sales.duckdb
-dbt project	~/airflow-project/airflow/dbt/sales_dbt	/opt/airflow/dbt/sales_dbt
-Airflow DAG	~/airflow-project/airflow/dags/sales_dbt_pipeline.py	/opt/airflow/dags/sales_dbt_pipeline.py
-
+| File | WSL path | Path inside container |
+|---|---|---|
+| DuckDB database | `~/airflow-project/airflow/dbt/sales_dbt/sales.duckdb` | `/opt/airflow/dbt/sales_dbt/sales.duckdb` |
+| dbt project | `~/airflow-project/airflow/dbt/sales_dbt` | `/opt/airflow/dbt/sales_dbt` |
+| Airflow DAG | `~/airflow-project/airflow/dags/sales_dbt_pipeline.py` | `/opt/airflow/dags/sales_dbt_pipeline.py` |
 
 This distinction later explained why hardcoded Docker paths failed for locally executed Python scripts.
-3. Choose compatible Airflow, Python, and dbt versions
-3.1 What caused concern
-We needed dbt to run inside the same Airflow image. Installing arbitrary latest versions could introduce Python compatibility or Airflow dependency conflicts. We tested and settled on a known-working combination:
-Component	Validated version
-Base Docker image	apache/airflow:3.3.2-python3.13
-Python inside Docker	3.13.15
-Apache Airflow	3.3.2
-dbt Core	1.11.16
-dbt DuckDB adapter	1.11.1
 
+3. Choose compatible Airflow, Python, and dbt versions
+
+3.1 What caused concern
+
+We needed dbt to run inside the same Airflow image. Installing arbitrary latest versions could introduce Python compatibility or Airflow dependency conflicts. We tested and settled on a known-working combination:
+| Component | Validated version |
+|---|---|
+| Base Docker image | `apache/airflow:3.3.2-python3.13` |
+| Python inside Docker | `3.13.15` |
+| Apache Airflow | `3.3.2` |
+| dbt Core | `1.11.16` |
+| dbt DuckDB adapter | `1.11.1` |
 
 The local WSL Python was later verified as Python 3.14; that is a separate installation, not the container interpreter. The local standalone verifier ultimately used DuckDB 2.0.0 and pandas 3.1.0. Do not assume Docker uses these same DuckDB/pandas versions; check it directly.
+
 3.2 Dockerfile
+
 The tested Dockerfile followed this structure:
+
 FROM apache/airflow:3.3.2-python3.13
 
 USER airflow
@@ -114,20 +140,29 @@ RUN pip install --no-cache-dir \
     "dbt-duckdb==1.11.1" \
     pandas sqlalchemy pymysql \
     && pip check
+
+
 pip check helps detect broken installed Python dependency requirements. Pinning the major runtime packages makes the environment more predictable.
+
 3.3 Test the image before changing the live service
+
 We built a temporary test image (my-airflow:dbt-test), then a GitHub-oriented check image (my-airflow:github-test). The latter was checked for Python/Airflow/dbt versions and pip check success.
 
 Reusable validation pattern:
+
 docker build -f Dockerfile.airflow-dbt -t my-airflow:dbt-test .
 
 docker run --rm --entrypoint python my-airflow:dbt-test \
   -c "import sys, airflow, duckdb; print(sys.version); print(airflow.__version__); print(duckdb.__version__)"
 
 docker run --rm --entrypoint dbt my-airflow:dbt-test --version
+
 Note: Verify the actual DuckDB version printed by Docker rather than assuming it matches your WSL installation.
+
 3.4 Wire the Dockerfile into Compose
+
 The Compose service sleek-airflow was subsequently configured to build from this Dockerfile and use image tag my-airflow:dbt:
+
 services:
   sleek-airflow:
     build:
@@ -140,13 +175,20 @@ services:
     ports:
       - "8080:8080"
       - "8081:8081"
+
 This is a focused excerpt, not a replacement for the complete existing Compose file (which also had environment variables and other service configuration). After editing:
+
 docker compose config --quiet
 docker compose up -d --build
+
 config --quiet succeeded during final review. The project historically ran on the tested image tag my-airflow:dbt-test; my-airflow:dbt is the intended reproducible Compose image tag.
+
 4. Resolve container filesystem permissions and dbt runtime errors
+
 These were some of the most instructive problems in the project.
+
 4.1 Problem: dbt executable inaccessible under the overridden user
+
 At one point, dbt was installed in the image but could not be executed with the configured runtime UID. The discovered issue involved access to the installed executable under /home/airflow/.local/bin/dbt when the container was running with a different user identity.
 
 Diagnosis: Installation success is not the same as runtime access. A Docker image can contain a package while its user, PATH, or home-directory permissions prevent it from running.
@@ -161,7 +203,9 @@ id -u
 docker compose config --quiet
 docker compose exec sleek-airflow id
 docker compose exec sleek-airflow which dbt
+
 4.2 Problem: dbt cannot write logs/ or target/
+
 A second permission problem arose because dbt normally attempts to create/write logs and target under the project directory. The ./airflow bind mount and runtime UID caused ownership/write-access friction.
 
 Fix: Redirect dbt-generated output to writable /tmp directories inside the container:
@@ -171,39 +215,54 @@ docker compose exec \
   -e DBT_PROFILES_DIR=/opt/airflow/dbt/sales_dbt \
   sleek-airflow \
   dbt debug --project-dir /opt/airflow/dbt/sales_dbt
+
 The three environment variables have distinct jobs:
-Variable	Purpose
-DBT_LOG_PATH	Writable location for dbt logs
-DBT_TARGET_PATH	Writable location for compiled SQL, manifests, run results
-DBT_PROFILES_DIR	Where dbt looks for profiles.yml
+| Variable | Purpose |
+|---|---|
+| `DBT_LOG_PATH` | Writable location for dbt logs |
+| `DBT_TARGET_PATH` | Writable location for compiled SQL, manifests, run results |
+| `DBT_PROFILES_DIR` | Where dbt looks for `profiles.yml` |
 
 
 Important: /tmp/sales-dbt-logs and /tmp/sales-dbt-target refer to container paths here, not host paths.
+
 4.3 Problem: dbt works in Docker but not from WSL
+
 Running dbt directly in Ubuntu originally failed because dbt was installed in the container image, not in the Ubuntu Python installation.
 
 The working approach was to run it through Compose:
+
 docker compose exec -e DBT_LOG_PATH=/tmp/sales-dbt-logs \
   -e DBT_TARGET_PATH=/tmp/sales-dbt-target \
   -e DBT_PROFILES_DIR=/opt/airflow/dbt/sales_dbt \
   sleek-airflow dbt --version
+
 The principle is to run dependencies in the environment where they are installed, rather than assuming all terminals share one Python environment.
+
 5. Set up the Sales dbt project
+
 5.1 dbt_project.yml and profiles.yml
+
 The project lives at airflow/dbt/sales_dbt/. Its dbt project references profile sales_dbt, and its models were configured to materialize as tables.
 
 The DuckDB profile points to:
+
 /opt/airflow/dbt/sales_dbt/sales.duckdb
 This is correct for dbt inside the container. Because the parent directory is bind-mounted, the resulting database file also exists under the WSL project folder.
+
 5.2 Input CSV
+
 airflow/dbt/sales_dbt/seeds/sales.csv:
 order_id,customer,amount
 1,Alice,500
 2,Bob,700
 3,Charlie,300
 4,Diana,900
+
 5.3 Transformation model
+
 airflow/dbt/sales_dbt/models/example_model.sql reads the CSV directly and computes two columns. The recorded approach used DuckDB's read_csv_auto:
+
 SELECT
     order_id,
     customer,
@@ -214,23 +273,35 @@ FROM read_csv_auto(
     '/opt/airflow/dbt/sales_dbt/seeds/sales.csv',
     header = true
 )
-The SQL above expresses the recorded transformation logic; keep your committed SQL as the source of truth if formatting or explicit types differ. Because this model reads the CSV directly, a dbt seed task is not required for the Sales model.
+
+The SQL above expresses the recorded transformation logic; keep your committed SQL as the source of truth if formatting or explicit types differ.
+Because this model reads the CSV directly, a dbt seed task is not required for the Sales model.
+
 5.4 Custom data-quality test
+
 airflow/dbt/sales_dbt/tests/assert_positive_total.sql:
+
 SELECT *
 FROM {{ ref('example_model') }}
 WHERE total_with_tax <= 0
+
 A dbt singular test passes when the SQL query returns zero rows. This test fails if any transformed order has a non-positive total.
+
 5.5 Run the model and test
+
 docker compose exec \
   -e DBT_LOG_PATH=/tmp/sales-dbt-logs \
   -e DBT_TARGET_PATH=/tmp/sales-dbt-target \
   -e DBT_PROFILES_DIR=/opt/airflow/dbt/sales_dbt \
   sleek-airflow \
   dbt build --project-dir /opt/airflow/dbt/sales_dbt --select example_model
+
 dbt build executes the selected model and eligible related tests. A separate dbt test --select example_model also passed 1/1 in our verification.
+
 6. Integrate dbt with Apache Airflow
+
 6.1 Sales DAG
+
 File: airflow/dags/sales_dbt_pipeline.py
 DAG ID: sales_dbt_pipeline
 
@@ -242,8 +313,11 @@ Both tasks set the dbt profile directory and writable log/target paths. The DAG 
 A conceptual task command is:
 dbt build --project-dir /opt/airflow/dbt/sales_dbt --select example_model
 The DAG imports correctly and was triggered from the Airflow UI at http://localhost:8080. Both tasks completed successfully.
+
 6.2 Debugging DAG discovery and execution
+
 When a DAG is absent from the UI or fails:
+
 1. Confirm the file is under the bind-mounted airflow/dags/ directory.
 2. Inspect container status and logs:
    docker compose ps
@@ -252,13 +326,17 @@ When a DAG is absent from the UI or fails:
 4. Read the specific task log in the Airflow UI to separate Python imports, dbt errors, file paths, and permissions.
 5. Confirm DBT_PROFILES_DIR, DBT_LOG_PATH, DBT_TARGET_PATH are set for the DAG task (not only for a manual shell command).
 The crucial distinction is that manual dbt success and Airflow task success are separate checks. We verified both.
+
 6.3 BritMart project
+
 File: airflow/dbt/britmart_analytics/
 DAG file: airflow/dags/airflow_dbt_pipeline.py
 DAG ID: britmart_airflow_dbt_pipeline
 
 The BritMart project contains seeds/orders.csv and models/stg_orders.sql; its workflow performs dbt connection/model operations against its own DuckDB database. The seed must be loaded before a staging model that uses ref('orders') can succeed. Consult the committed DAG for the exact tasks currently automated; do not assume seed loading is in that DAG.
+
 6.4 dbt documentation
+
 The project also served dbt documentation using the additional port 8081. A typical documentation generation step is:
 docker compose exec \
   -e DBT_LOG_PATH=/tmp/sales-dbt-logs \
@@ -267,7 +345,9 @@ docker compose exec \
   sleek-airflow \
   dbt docs generate --project-dir /opt/airflow/dbt/sales_dbt
 Serving docs requires a process bound to an appropriate interface and port. In the completed sessions, the dbt docs UI was successfully accessed on http://localhost:8081 for BritMart. Do not assume generating docs for Sales automatically makes its docs available at the same port.
+
 7. Verify the transformed DuckDB table with Python
+
 7.1 Original Docker-specific script
 The original assignments/airflow_dbt_duckdb/verify_duckdb.py connected to:
 duckdb.connect(
@@ -283,8 +363,10 @@ docker run --rm --user "1000:0" --entrypoint python \
   my-airflow:dbt-test \
   /opt/assignments/airflow_dbt_duckdb/verify_duckdb.py
 It printed four records and the expected values.
+
 7.2 Make the script portable with pathlib
 When the user wanted to click Run Python File in VS Code or run it directly in WSL, we removed the hardcoded container path:
+
 from pathlib import Path
 import duckdb
 
@@ -314,8 +396,12 @@ def verify_sales_table():
 
 if __name__ == '__main__':
     verify_sales_table()
-Why it works: __file__ locates this script; .parent.parent ascends from assignments/airflow_dbt_duckdb/ to the repository root; the / operator assembles the path for the current machine. It remains dependent on the repository's relative folder structure and the database already existing. This exact version is portable across local clones, but does not automatically work with the earlier Docker command, since that command mounts assignments under /opt/assignments rather than beneath the same repository root as airflow. For Docker verification, either retain the Docker-specific variant or mount the entire project at one common parent path and adjust permissions.
+
+Why it works:
+ __file__ locates this script; .parent.parent ascends from assignments/airflow_dbt_duckdb/ to the repository root; the / operator assembles the path for the current machine. It remains dependent on the repository's relative folder structure and the database already existing. This exact version is portable across local clones, but does not automatically work with the earlier Docker command, since that command mounts assignments under /opt/assignments rather than beneath the same repository root as airflow. For Docker verification, either retain the Docker-specific variant or mount the entire project at one common parent path and adjust permissions.
+
 7.3 Debug the initial pathlib mistakes
+
 Two coding mistakes were corrected:
 
 Missing import:
@@ -326,13 +412,19 @@ DB_PATH = 'PROJECT_ROOT/airflow/dbt/sales_dbt/sales.duckdb'
 
 # RIGHT: joins the variable's value with path components
 DB_PATH = PROJECT_ROOT / 'airflow' / 'dbt' / 'sales_dbt' / 'sales.duckdb'
+
 8. Fix WSL Python package errors without disturbing Docker
+
 After switching to direct local execution, the initial errors were:
 ModuleNotFoundError: No module named 'duckdb'
 /usr/bin/python3: No module named pip
 bash: .venv/bin/activate: No such file or directory
 Command 'python' not found
-Why: WSL Ubuntu initially had system python3, but not local DuckDB/pandas or pip; no .venv had been created; Ubuntu's default executable was python3, not python.
+
+Why:
+
+WSL Ubuntu initially had system python3, but not local DuckDB/pandas or pip; no .venv had been created; Ubuntu's default executable was python3, not python.
+
 8.1 Install supporting packages
 sudo apt update
 sudo apt install -y python3-pip python3-venv
@@ -349,7 +441,9 @@ Successfully installed duckdb-2.0.0 ... pandas-3.1.0 ...
 DuckDB: 2.0.0
 pandas: 3.1.0
 Once .venv is active, python refers to the environment's interpreter, and it can import DuckDB and pandas.
+
 8.3 Run the script successfully
+
 python assignments/airflow_dbt_duckdb/verify_duckdb.py
 Observed output:
 Sales transformation results:
@@ -360,12 +454,19 @@ Sales transformation results:
         4    Diana     900          162.0          1062.0
 
 Total records: 4
+
 Git ignore status was also verified:
+
 git check-ignore -v .venv/
 # .gitignore:15:.venv/    .venv/
-Isolation: pip install in .venv does not alter the Docker image. But both environments can see the same .duckdb file via the bind mount; avoid simultaneous writes, and consider database-format compatibility if DuckDB versions differ.
+
+Isolation:
+pip install in .venv does not alter the Docker image. But both environments can see the same .duckdb file via the bind mount; avoid simultaneous writes, and consider database-format compatibility if DuckDB versions differ.
+
 9. Version control and GitHub publication
+
 9.1 Make the repository reproducible and safe
+
 The committed materials included:
 - .gitignore to exclude .env, local databases, .venv/, logs, dbt generated files, caches, generated credentials and backups.
 - .dockerignore to keep unnecessary local files out of build context.
@@ -373,7 +474,9 @@ The committed materials included:
 - Dockerfile.airflow-dbt and docker-compose.yml to document/build the runtime.
 - Both dbt projects, both Airflow DAGs, the verifier, and root README.
 We intentionally did not stage unrelated QuickCart inputs, rejected data, previous workflows, or private artifacts as part of the initial assignment commit.
+
 9.2 Stage only the intended assignment files
+
 The initial selection was staged explicitly; BritMart was added later:
 git add .gitignore .dockerignore .env.example README.md \
   Dockerfile.airflow-dbt docker-compose.yml \
@@ -383,13 +486,17 @@ git add .gitignore .dockerignore .env.example README.md \
 git add airflow/dbt/britmart_analytics/
 git add airflow/dags/airflow_dbt_pipeline.py
 A generated dbt sample model directory was removed from the Sales staging index, leaving the actual sales model. The BritMart project's default generated dbt example models remained staged in that initial commit.
+
 9.3 Pre-commit checks
+
 git diff --cached --name-only
 git diff --cached --check
 git diff --cached --name-only | grep -Ei \
   '(\.env$|\.duckdb|\.db$|\.log$|\.backup$|\.user\.yml)'
 The whitespace check initially identified trailing whitespace in docker-compose.yml; it was corrected and re-staged. The final exclusion-pattern check returned no matches. Filename checks are not a complete secret scan: always review staged content for hardcoded tokens/passwords, too.
+
 9.4 Commit identity error
+
 Attempting the first commit initially failed:
 Author identity unknown
 fatal: empty ident name ... not allowed
@@ -400,7 +507,9 @@ git config --global user.name "Your Git author name"
 git config --global user.email "your-github-email@example.com"
 The user then committed successfully:
 9716b09 (HEAD -> main) Add Airflow dbt DuckDB pipelines for Sales and BritMart
+
 9.5 GitHub SSH authentication error
+
 The first push failed with:
 git@github.com: Permission denied (publickey).
 fatal: Could not read from remote repository.
@@ -409,6 +518,7 @@ The first SSH attempt had added GitHub to known_hosts, which records the server'
 Investigations showed:
 ~/.ssh/ contained only known_hosts
 ssh-add -l -> Could not open a connection to your authentication agent
+
 Resolution:
 1. Generate a new SSH keypair within WSL Ubuntu:
    ssh-keygen -t ed25519 -C "your-github-email@example.com"
@@ -424,14 +534,18 @@ Resolution:
 6. Push the existing commit (no new commit necessary):
    git push -u origin main
 The user confirmed that both projects and associated files became visible in the GitHub repository Namrota/dbt_docker_airflow_setup.
+
 9.6 Push the later pathlib improvement
+
 The portable verifier was updated after the first GitHub push. To publish this later change:
 git status
 git add assignments/airflow_dbt_duckdb/verify_duckdb.py
 git commit -m "Make DuckDB verification script portable"
 git push
 Check the current Git status to verify whether this follow-up commit has already been pushed; the conversation confirmed the earlier repository push but not a later push of the portable verifier.
+
 10. Error → root cause → fix reference
+
 Symptom / error	Root cause	Fix or diagnostic
 Docker commands unavailable in WSL	Docker Desktop stopped or WSL integration inactive	Start Docker Desktop; verify WSL integration and docker ps
 Docker socket permission denied	Ubuntu user lacked effective socket access	Docker group membership; restart shell; avoid unsafe socket chmod
@@ -454,6 +568,7 @@ Could not open a connection to your authentication agent	SSH agent not running/c
 
 
 11. How to reproduce from a fresh clone
+
 These are the broad steps for someone cloning the repository; the existing README/Compose file should be consulted for environment variables and local prerequisites.
 # 1. Clone via SSH (after registering an SSH authentication key).
 git clone git@github.com:Namrota/dbt_docker_airflow_setup.git
