@@ -94,15 +94,21 @@ Initially Docker Desktop was not running. Start it in Windows, ensure WSL integr
 - docker info
 - docker ps
 An earlier Docker socket permission issue in the broader setup was solved using Docker group access. For a system where group membership is not configured:
-sudo usermod -aG docker "$USER"
 
-# Exit/restart the WSL shell for the new group membership to apply.
+sudo usermod -aG docker "$USER"
+##### Exit/restart the WSL shell for the new group membership to apply.
 groups
+
+
 Do not run arbitrary chmod 777 /var/run/docker.sock: weakening the socket permissions is not the recommended remedy.
+
 2.3 Understand the bind mount
+
 The Compose application used this important mapping:
+
 volumes:
   - ./airflow:/opt/airflow
+
 Therefore the same files have two apparent paths:
 | File | WSL path | Path inside container |
 |---|---|---|
