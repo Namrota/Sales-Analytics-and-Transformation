@@ -51,7 +51,8 @@ def brewbeats_pipeline():
         import snowflake.connector
 
         # Comment it to test with the last available historical date
-        today = pendulum.now("Europe/Berlin").to_date_string()
+        # today = pendulum.now("Europe/Berlin").to_date_string()
+        today= "2025-03-23"
 
         conn = snowflake.connector.connect(
             account="BWHMODU-XJ86285",
