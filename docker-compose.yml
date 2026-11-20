@@ -11,6 +11,12 @@ services:
     volumes:
       - ./airflow:/opt/airflow
 
+      # BrewBeats dbt project on Windows
+      - /mnt/d/IronHack_DE/Week7_Day3-5_MiniProject/brewbeats_dbt:/opt/airflow/brewbeats_dbt
+
+      # Snowflake dbt profile on Windows (read-only)
+      - /mnt/c/Users/samra/.dbt:/opt/airflow/.dbt:ro
+
     ports:
       - "8080:8080"  # Airflow Ui
       - "8081:8081"  # dbt documentation UI
@@ -35,4 +41,9 @@ services:
       GMAIL_ADDRESS: "${GMAIL_ADDRESS}"
 
       AIRFLOW_CONN_SMTP_DEFAULT: "smtp://${GMAIL_ADDRESS}:${GMAIL_APP_PASSWORD}@smtp.gmail.com:587?disable_ssl=true"
+
+      #snowflake
+      DBT_PROFILES_DIR: /opt/airflow/.dbt
+      SNOWFLAKE_PASSWORD: "${SNOWFLAKE_PASSWORD:?SNOWFLAKE_PASSWORD is required}"
+
     command: airflow standalone

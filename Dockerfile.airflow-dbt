@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir \
     "apache-airflow==3.3.2" \
     "dbt-core==1.11.16" \
     "dbt-duckdb==1.11.1" \
+    "dbt-snowflake==1.11.1"\
     pandas \
     sqlalchemy \
     pymysql \

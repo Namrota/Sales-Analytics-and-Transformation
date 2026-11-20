@@ -1,0 +1,154 @@
+event_id,customer_id,event_type,page_url,event_timestamp,device_type,rejection_reason
+66,44.0,Search,/product/105,22/05/2025 05:21,,duplicate_event_id
+375,58.0,SEARCH,/cart,2025-01-07T19:05:03Z,Desktop,duplicate_event_id
+30,99.0,Add_To_Cart,/cart,19/06/2025 16:14,desktop,duplicate_event_id
+85,32.0,CLICK ,/account,09/03/2025 13:46,,duplicate_event_id
+400,55.0,Add_To_Cart,/orders,07/03/2025 12:29,desktop,duplicate_event_id
+619,,search,/help,2025-07-10T23:08:29Z,Tablet,duplicate_event_id
+930,15.0,Add_To_Cart,/product/105,21/05/2025 00:11,MOBILE,duplicate_event_id
+367,36.0,add_to_cart,/products,01/06/2025 23:09,Tablet,duplicate_event_id
+370,85.0,PAGEVIEW,/product/101,2025-03-14T16:42:49Z,MOBILE,duplicate_event_id
+110,46.0,clik,/cart,2025-01-31T02:10:51Z,desktop,duplicate_event_id
+485,79.0,search,/help,2025-04-05 06:34:39,MOBILE,duplicate_event_id
+388,27.0,pageview,/products,2025-04-17T03:35:08Z,,duplicate_event_id
+619,23.0,ADD TO CART,/help,12/06/2025 06:17,mobile,duplicate_event_id
+2,81.0,CLICK ,/cart,2025-04-09 16:37:19,mobile,duplicate_event_id
+1148,35.0,purchase,/product/105,16/06/2025 14:00,Desktop,duplicate_event_id
+1551,99.0,clik,/orders,2025-06-29 19:54:13,,duplicate_event_id
+1257,22.0,log_out,/home,2025-02-13 03:53:56,MOBILE,duplicate_event_id
+256,97.0,click,/home,2025-05-12 18:03:30,desktop,duplicate_event_id
+583,44.0, purchase ,/account,2025-05-08 10:17:24,MOBILE,duplicate_event_id
+1471,89.0,LOG OUT,/products,2025-02-10 08:23:49,,duplicate_event_id
+30,27.0,search,/help,2025-05-18 05:23:20,,duplicate_event_id
+375,97.0,Purchase,/checkout,2025-07-05T11:08:44Z,mobile,duplicate_event_id
+1023,45.0,Add_To_Cart,/account,2025-07-09 18:43:09,,duplicate_event_id
+72,63.0,CLICK ,/search,2025-04-02 00:31:08,tablet,duplicate_event_id
+1892,50.0,PAGEVIEW,/home,11/01/2025 12:25,Mobile,duplicate_event_id
+56,49.0,ADD TO CART,/help,17/02/2025 17:16,,duplicate_event_id
+85,81.0,Search,/account,30/06/2025 03:00,mobile,duplicate_event_id
+491,30.0,PURCHASE,/product/101,22/04/2025 03:57,Mobile,duplicate_event_id
+66,29.0,serach,/cart,04/02/2025 21:46,,duplicate_event_id
+25,88.0,PAGEVIEW,/search,2025-01-27T16:49:42Z,desktop,duplicate_event_id
+210,2.0,Logout,/products,2025-05-27T19:25:34Z,mobile,duplicate_event_id
+177,38.0,purchase,/cart,05/07/2025 07:57,Tablet,duplicate_event_id
+10,21.0, purchase ,/product/105,2025-03-15 10:18:41,mobile,duplicate_event_id
+755,83.0,serach,/home,20/07/2025 07:32,desktop,duplicate_event_id
+1362,34.0,logout,/help,2025-07-01T20:44:17Z,Mobile,duplicate_event_id
+1362,20.0,CLICK ,/orders,2025-05-07T23:02:50Z,,duplicate_event_id
+2,54.0,Search,/account,2025-06-06T15:55:54Z,Mobile,duplicate_event_id
+25,49.0, purchase ,/products,19/06/2025 17:08,mobile,duplicate_event_id
+367,9.0, purchase ,/help,26/04/2025 10:50,MOBILE,duplicate_event_id
+56,18.0,PURCHASE,/help,2025-03-26T14:21:27Z,MOBILE,duplicate_event_id
+111,90.0,CLICK ,/product/101,2025-03-05 11:25:32,desktop,duplicate_event_id
+138,31.0, page_view,/home,2025-05-13 18:43:39,mobile,duplicate_event_id
+10,86.0,Click,/home,2025-03-26T22:30:06Z,MOBILE,duplicate_event_id
+256,43.0,ADD TO CART,,2025-02-01T11:55:43Z,Desktop,duplicate_event_id
+111,38.0,log_out,/products,29/04/2025 21:05,,duplicate_event_id
+755,17.0,LOG OUT,/account,05/02/2025 10:35,tablet,duplicate_event_id
+1471,62.0,Logout,/product/105,14/02/2025 18:38,,duplicate_event_id
+72,63.0,Click,/home,2025-03-09T19:24:40Z,Desktop,duplicate_event_id
+177,53.0,PAGEVIEW,,2025-06-23T16:49:47Z,Desktop,duplicate_event_id
+1023,,clik,/account,04/02/2025 16:55,desktop,duplicate_event_id
+210,12.0, purchase ,/orders,12/06/2025 07:14,,duplicate_event_id
+370,97.0,Page_View,/search,2025-03-19T15:47:48Z,Desktop,duplicate_event_id
+400,19.0,log_out,/product/101,2025-02-04T14:46:12Z,Tablet,duplicate_event_id
+525,13.0,pageview,/home,2025-01-29T11:12:32Z,tablet,duplicate_event_id
+138,65.0,click,/product/101,2025-06-07T19:02:56Z,,duplicate_event_id
+1148,74.0,clik,/products,2025-01-29T16:34:02Z,mobile,duplicate_event_id
+836,15.0,LOG OUT,/checkout,2025-04-22 01:15:14,Mobile,duplicate_event_id
+1427,90.0,page_view,/home,14/04/2025 13:27,Tablet,duplicate_event_id
+2,93.0,search,/help,2025-06-17T18:36:14Z,Mobile,duplicate_event_id
+110,100.0,Click,/account,2025-06-11T20:05:37Z,desktop,duplicate_event_id
+1257,,LOG OUT,/help,2025-07-18 06:31:35,Mobile,duplicate_event_id
+521,51.0,click,/products,2025-07-19T15:15:59Z,MOBILE,duplicate_event_id
+491,83.0,Click,/products,2025-04-05 16:16:44,desktop,duplicate_event_id
+525,54.0,SEARCH,/checkout,2025-01-03T08:57:33Z,MOBILE,duplicate_event_id
+485,61.0,add-to-cart,/product/105,01/07/2025 13:47,mobile,duplicate_event_id
+1427,84.0,SEARCH,/product/105,2025-02-01T04:34:29Z,,duplicate_event_id
+1892,38.0,add-to-cart,,10/01/2025 07:45,desktop,duplicate_event_id
+930,86.0,Purchase,/products,23/03/2025 04:25,desktop,duplicate_event_id
+583,43.0,log_out,/search,2025-03-26 00:57:44,tablet,duplicate_event_id
+521,54.0,Page_View,/search,10/05/2025 05:05,tablet,duplicate_event_id
+836,85.0,add_to_cart,/products,2025-07-01 19:31:49,,duplicate_event_id
+388,80.0,Search,/home,2025-01-13 09:52:50,,duplicate_event_id
+1551,16.0,click,/home,17/05/2025 04:54,desktop,duplicate_event_id
+747,86.0,click,,28/04/2025 04:31,mobile,empty page URL
+629,35.0,serach,,2025-02-13 15:00:06,tablet,empty page URL
+756,54.0,page_view,,2025-02-09T11:53:52Z,tablet,empty page URL
+1037,57.0,click,,2025-02-18T18:19:58Z,unknown,empty page URL
+887,10.0,serach,,2025-05-19 19:58:09,tablet,empty page URL
+863,61.0,click,,2025-02-12T02:08:32Z,tablet,empty page URL
+1542,13.0,search,,2025-04-18 21:02:22,mobile,empty page URL
+1382,9.0,add_to_cart,,2025-02-22T20:40:27Z,mobile,empty page URL
+332,30.0,click,,2025-06-10 03:47:54,tablet,empty page URL
+1913,61.0,click,,2025-02-04 00:15:39,unknown,empty page URL
+597,73.0,purchase,,24/01/2025 09:41,tablet,empty page URL
+818,46.0,purchase,,2025-02-10T11:32:54Z,desktop,empty page URL
+382,52.0,page_view,,2025-06-26T15:07:36Z,tablet,empty page URL
+1652,75.0,page_view,,2025-02-12T00:55:23Z,tablet,empty page URL
+1335,6.0,clik,,20/06/2025 16:27,tablet,empty page URL
+1944,15.0,page_view,,2025-03-14 00:37:15,desktop,empty page URL
+149,21.0,add_to_cart,,2025-01-13 05:54:36,desktop,empty page URL
+926,55.0,log_out,,2025-05-12T05:59:19Z,unknown,empty page URL
+1462,77.0,purchase,,2025-06-17 20:36:19,desktop,empty page URL
+1231,64.0,click,,03/01/2025 20:23,tablet,empty page URL
+494,32.0,search,,24/06/2025 21:07,mobile,empty page URL
+1166,30.0,add_to_cart,,2025-01-16 16:50:00,unknown,empty page URL
+1630,38.0,purchase,,2025-03-01T21:28:45Z,tablet,empty page URL
+1152,52.0,click,,2025-01-08 09:07:13,mobile,empty page URL
+1539,37.0,search,,2025-04-11 15:29:24,tablet,empty page URL
+1221,12.0,add_to_cart,,2025-05-30 02:02:39,desktop,empty page URL
+458,15.0,page_view,,18/06/2025 13:36,desktop,empty page URL
+356,56.0,add_to_cart,,11/05/2025 12:54,mobile,empty page URL
+893,64.0,add_to_cart,,2025-06-26 18:38:26,desktop,empty page URL
+292,66.0,logout,,02/04/2025 04:08,desktop,empty page URL
+637,88.0,purchase,,13/06/2025 10:01,mobile,empty page URL
+42,,log_out,,2025-07-04 08:34:18,unknown,empty page URL
+349,86.0,add-to-cart,,02/05/2025 03:22,mobile,empty page URL
+1469,18.0,logout,,2025-01-21 05:17:45,mobile,empty page URL
+787,,purchase,,19/06/2025 16:28,mobile,empty page URL
+843,11.0,log_out,,2025-04-08 12:28:02,desktop,empty page URL
+1419,14.0,add-to-cart,,2025-01-12 17:03:49,unknown,empty page URL
+1211,20.0,log_out,,17/01/2025 05:54,unknown,empty page URL
+425,92.0,add-to-cart,,2025-03-30T11:19:28Z,mobile,empty page URL
+67,52.0,clik,,07/06/2025 06:28,tablet,empty page URL
+28,3.0,page_view,,2025-06-03 21:45:55,desktop,empty page URL
+239,77.0,clik,,2025-06-18 16:18:12,unknown,empty page URL
+848,36.0,search,,20/03/2025 18:42,mobile,empty page URL
+81,48.0,purchase,,18/07/2025 23:05,tablet,empty page URL
+1669,95.0,click,,20/02/2025 23:10,desktop,empty page URL
+83,88.0,page_view,,10/02/2025 14:29,desktop,empty page URL
+105,45.0,search,,2025-06-18T12:54:47Z,desktop,empty page URL
+374,87.0,click,,2025-01-03 02:00:26,unknown,empty page URL
+1495,76.0,search,,07/07/2025 00:29,mobile,empty page URL
+134,85.0,purchase,,13/02/2025 20:18,mobile,empty page URL
+1470,65.0,add-to-cart,,2025-05-18T00:06:30Z,unknown,empty page URL
+1210,36.0,page_view,,2025-02-04 06:26:36,tablet,empty page URL
+1543,70.0,purchase,,30/01/2025 02:24,desktop,empty page URL
+596,65.0,purchase,,06/02/2025 14:04,desktop,empty page URL
+729,21.0,page_view,,2025-03-21T06:35:12Z,mobile,empty page URL
+115,74.0,serach,,2025-06-24 13:11:22,mobile,empty page URL
+1876,17.0,click,,2025-03-25 07:29:11,desktop,empty page URL
+852,92.0,search,,2025-04-01T17:45:02Z,desktop,empty page URL
+1261,18.0,add_to_cart,,2025-02-23T22:07:53Z,mobile,empty page URL
+269,35.0,purchase,,2025-01-13 17:01:11,desktop,empty page URL
+1220,55.0,page_view,,15/02/2025 01:08,tablet,empty page URL
+2000,19.0,purchase,,18/04/2025 10:22,unknown,empty page URL
+150,87.0,serach,,2025-07-19 21:00:30,mobile,empty page URL
+408,10.0,search,,2025-04-20T08:44:39Z,desktop,empty page URL
+1769,46.0,page_view,,06/01/2025 00:35,desktop,empty page URL
+473,92.0,add_to_cart,,2025-07-09T21:51:03Z,desktop,empty page URL
+385,57.0,click,,2025-06-01 07:31:24,unknown,empty page URL
+1916,85.0,clik,,24/01/2025 04:14,desktop,empty page URL
+1497,86.0,add_to_cart,,15/06/2025 12:58,mobile,empty page URL
+1530,41.0,log_out,,2025-04-17 22:58:03,tablet,empty page URL
+1060,55.0,purchase,,2025-01-27T10:35:30Z,tablet,empty page URL
+1599,99.0,log_out,,18/06/2025 02:14,mobile,empty page URL
+1793,75.0,click,,2025-01-28T16:19:32Z,unknown,empty page URL
+613,95.0,logout,,2025-07-14T03:19:15Z,tablet,empty page URL
+1571,47.0,log_out,,04/07/2025 08:23,tablet,empty page URL
+1153,58.0,purchase,,02/06/2025 09:21,desktop,empty page URL
+1749,64.0,click,,2025-06-27 20:43:13,tablet,empty page URL
+456,76.0,add_to_cart,,10/06/2025 10:24,tablet,empty page URL
+122,30.0,page_view,,07/06/2025 06:51,mobile,empty page URL
+1096,17.0,logout,,08/04/2025 06:57,tablet,empty page URL
